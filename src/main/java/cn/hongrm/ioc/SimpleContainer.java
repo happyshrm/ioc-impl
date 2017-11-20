@@ -1,5 +1,8 @@
 package cn.hongrm.ioc;
 
+import cn.hongrm.ioc.util.ReflectUtils;
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -37,27 +40,54 @@ public class SimpleContainer implements Container {
     }
 
     public Object registerBean(Object bean) {
-        return null;
+        if (bean!=null){
+            String className = bean.getClass().getName();
+            beanKeys.put(className,className);
+            beans.put(className,bean);
+        }
+        return bean;
     }
 
     public Object registerBean(Class<?> clazz) {
+        if (clazz != null){
+            String className = clazz.getName();
+            Object bean = ReflectUtils.newInstance(clazz);
+            beanKeys.put(className,className);
+            beans.put(className,bean);
+            return bean;
+        }
         return null;
     }
 
     public Object regiaterBean(String name, Object bean) {
+        if ( !StringUtils.isEmpty(name) && bean != null){
+            String className = bean.getClass().getName();
+            beans.put(className,bean);
+            beanKeys.put(name,className);
+            return bean;
+        }
         return null;
     }
 
     public void removeBean(Class<?> clazz) {
-
+        String className = clazz.getName();
+        if(!StringUtils.isEmpty(className)){
+            beanKeys.remove(className);
+            beans.remove(className);
+        }
     }
 
     public void removeBeanByName(String name) {
-
+        String className = beanKeys.get(name);
+        if(!StringUtils.isEmpty(className)){
+            beanKeys.remove(name);
+            beans.remove(className);
+        }
     }
 
     public Set<String> getBeanNames() {
-        return null;
+
+        return beanKeys.keySet();
     }
 
     public void initWired() {
